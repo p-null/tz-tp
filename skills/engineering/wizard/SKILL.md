@@ -36,6 +36,8 @@ Copy `template.sh` to the target path. Replace the example stage with one `stage
 
 Hold the bar the template sets: open the URL before asking for its value, use `ask_secret` for anything secret, `write_env` every persisted value, `set_secret` only the values CI actually needs, and `confirm` before any irreversible action. Each `stage` clears the screen so only the current step is visible: keep a stage to one focused task so nothing the human needs scrolls away. Don't touch the library above the marker.
 
+**`ENV_FILE` gotcha:** the library sets `ENV_FILE="${ENV_FILE:-.env}"` unconditionally near the top, before your STAGES section runs. If your STAGES section needs a *specific* path (not "whatever the caller already set, else `.env`"), a matching `ENV_FILE="${ENV_FILE:-$SOME_PATH}"` line is a no-op — `$ENV_FILE` is already set by then, so the `:-` never fires, and state silently lands in `.env` relative to wherever the human happened to invoke the script. Use a plain assignment instead: `ENV_FILE="$SOME_PATH"`, no `:-`. (Confirmed real: a generated wizard silently wrote its resumability state into an unrelated directory this way.)
+
 ### 4. Verify and hand off
 
 - `bash -n <script>`; run `shellcheck` if available.
