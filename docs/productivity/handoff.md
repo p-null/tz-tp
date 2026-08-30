@@ -47,6 +47,8 @@ The temp directory, which is the most-reported friction with the skill: the path
 **My handoff vanished between sessions.**
 Some environments clear temp between sessions (Codex is the reported case), and `/private/tmp` goes on reboot. If the next session isn't starting within the hour, or is starting under a different harness, copy the file somewhere durable yourself as soon as it's written. The same applies to anything the document *points at*: a dispatch that references other files in temp is a dispatch the next agent can't follow.
 
+A sharper version of this hits Claude Code **background jobs**: that harness tells the session to route "temporary files" to a job-scoped directory (`$CLAUDE_JOB_DIR/tmp`) that's deleted the instant the job itself is deleted, which can be seconds after `/clear` rather than "within the hour." If the doc ends up under a path like `~/.claude/jobs/<id>/tmp/`, it is not durable at all - copy it to the real OS temp dir (or somewhere durable) immediately, don't wait for the next session.
+
 **How do I actually hand it to the next agent?**
 Open the fresh session and point it at the path: read this file, then continue. Point at the file rather than pasting the summary into a shell command: a summary containing backticks or `$(...)` gets mangled when it's interpolated into `claude "<summary>"`, and the usual failure is silent truncation rather than an error, so the new agent starts with a quietly incomplete brief.
 
