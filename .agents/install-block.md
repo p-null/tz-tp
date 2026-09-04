@@ -22,9 +22,24 @@ It's in Claude Code's official marketplace, so there's nothing to add first, and
 
 </canonical-block>
 
-## Codex, and other agents: skills.sh
+## Codex: the plugin
 
-The plugin is Claude Code only. Everywhere else, [skills.sh](https://skills.sh/mattpocock/skills) copies editable skill files into the project. Use the whole-set form on `README.md`:
+From a checkout of this repository:
+
+<canonical-block name="codex">
+
+```bash
+codex plugin marketplace add /path/to/tz-tp/dist
+codex plugin add mskills@tz-tp
+```
+
+</canonical-block>
+
+The generated bundle contains the same promoted skill set as the Claude Code plugin. Start a new Codex thread after installing it.
+
+## Other agents: skills.sh
+
+[skills.sh](https://skills.sh/mattpocock/skills) copies editable skill files into the project. Use the whole-set form on `README.md`:
 
 <canonical-block name="skills-sh-whole-set">
 
@@ -58,4 +73,4 @@ The plugin is a managed, read-only bundle you subscribe to. skills.sh writes fil
 
 ## Not the install story
 
-`.claude-plugin/marketplace.json` makes the repo its own single-plugin marketplace (`/plugin marketplace add mattpocock/skills`, then `/plugin install mattpocock-skills@mattpocock`). The official listing supersedes it. It is kept as a fallback for installing the repo directly (an unreleased commit, or a fork), and is **not** documented to users.
+`.claude-plugin/marketplace.json` makes the repo its own single-plugin Claude marketplace. The generated `dist/.agents/plugins/marketplace.json` is the corresponding Codex marketplace. The Claude fallback is retained for installing the repository directly and is **not** documented to users.
