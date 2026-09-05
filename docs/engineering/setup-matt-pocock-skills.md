@@ -4,7 +4,7 @@
 
 Those files are the only thing that varies between repos. The skills themselves are identical everywhere; they read `docs/agents/issue-tracker.md` at run time and do what it says. That is why the set is not tied to GitHub, and why no skill file ever needs editing to point it somewhere else. Invoking it with "link the skills to a custom issue tracker" works with anything you can connect to programmatically, with zero changes to the skills.
 
-It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, your existing `CLAUDE.md`, your existing `CONTEXT.md`, proposes what it found, and waits for you to confirm before writing anything.
+It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, your existing `CLAUDE.md` (at either `./CLAUDE.md` or `./.claude/CLAUDE.md` — Claude Code loads both locations), your existing `CONTEXT.md`, proposes what it found, and waits for you to confirm before writing anything.
 
 ## When to reach for it
 
@@ -21,7 +21,7 @@ It writes into the repo you run it in:
 | `issue-tracker.md` | `docs/agents/` |
 | `domain.md` | `docs/agents/` |
 | `triage-labels.md` | `docs/agents/`, only when the `triage` skill is installed |
-| An `## Agent skills` block | whichever of `CLAUDE.md` / `AGENTS.md` already exists |
+| An `## Agent skills` block | whichever `CLAUDE.md` / `AGENTS.md` already exists; if only `AGENTS.md` exists, also a `.claude/CLAUDE.md` bridge (`@../AGENTS.md`) so Claude Code loads it |
 
 All of it is committed markdown. There is no user-level or global mode: the config lives in the repo, so every repo gets its own copy.
 
@@ -60,7 +60,7 @@ Asked directly after v1.1, Matt said yes. The skill's own closing message is sof
 
 **It wrote to `CLAUDE.md`, but I'm on Codex.**
 
-Known gap, still open. The file-selection rule is "edit `CLAUDE.md` if it exists, else `AGENTS.md`": it checks which file exists, not which [harness](https://www.aihero.dev/ai-coding-dictionary/harness) is running. A repo with a `CLAUDE.md` left over from Claude Code will get its `## Agent skills` block somewhere Codex never reads. Two workarounds are in circulation: move the block to `AGENTS.md` by hand, or keep `AGENTS.md` canonical and make `CLAUDE.md` a one-line pointer at it. If neither file exists, the skill asks you which to create rather than picking, which has confused people who expected it to just decide.
+Fixed: the skill now bridges instead of picking one file. `CLAUDE.md` and `AGENTS.md` aren't interchangeable — Claude Code reads `CLAUDE.md` only, with no native `AGENTS.md` fallback, so a repo with only an `AGENTS.md` left its `## Agent skills` block somewhere Claude Code never read. The fix is the second of the two workarounds that used to circulate by hand: keep `AGENTS.md` canonical for cross-tool content, and add a `.claude/CLAUDE.md` that's just `@../AGENTS.md`, a one-line pointer. The skill now does this automatically whenever `AGENTS.md` is the only file present. If neither file exists yet, it still asks which to use as canonical, but a Claude Code-only choice now defaults to `./.claude/CLAUDE.md` rather than a bare `./CLAUDE.md` at the repo root.
 
 **It didn't create my triage labels.**
 
@@ -84,7 +84,7 @@ One long-standing complaint says yes, in these words: *"having a skill to set up
 ## It's working if
 
 - `docs/agents/issue-tracker.md` and `docs/agents/domain.md` exist, plus `triage-labels.md` if `triage` is installed.
-- An `## Agent skills` section appears in the instruction file your harness actually reads, with a one-line summary pointing at each of those files.
+- An `## Agent skills` section appears in the instruction file your harness actually reads, with a one-line summary pointing at each of those files — and, if `AGENTS.md` is canonical, a `.claude/CLAUDE.md` bridge exists so Claude Code reads it too.
 - The tracker it proposed matches the remote you really use, and the label strings match labels that really exist in your tracker.
 - Afterwards, `/to-tickets` publishes without asking you where issues live, and `/triage` applies labels rather than inventing them.
 - Nothing in the skill files themselves changed. If setup edited a `SKILL.md`, something went wrong.
