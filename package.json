@@ -9,8 +9,12 @@
   },
   "license": "MIT",
   "scripts": {
-    "build-codex-plugin": "node scripts/build-codex-plugin.mjs",
-    "check-codex-plugin": "node scripts/build-codex-plugin.mjs --check",
+    "build-agent-plugins": "node scripts/build-agent-plugins.mjs",
+    "check-agent-plugins": "node scripts/build-agent-plugins.mjs --check",
+    "build-codex-plugin": "node scripts/build-agent-plugins.mjs",
+    "check-codex-plugin": "node scripts/build-agent-plugins.mjs --check",
+    "build-antigravity-plugin": "node scripts/build-agent-plugins.mjs",
+    "check-antigravity-plugin": "node scripts/build-agent-plugins.mjs --check",
     "changeset": "changeset",
     "version": "changeset version && node scripts/sync-plugin-version.mjs",
     "check-plugin-version": "node scripts/sync-plugin-version.mjs --check"

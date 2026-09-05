@@ -24,7 +24,7 @@ If you want to keep up with changes to these skills, and any new ones I create, 
 
 ## Installation (30-second setup)
 
-The Claude Code and Codex plugins install the promoted skills as managed, read-only bundles. **[skills.sh](https://skills.sh/mattpocock/skills)** copies editable skill files into your project, so you can hack on them and make them your own. Pick one route: installing both leaves you with every skill twice.
+The Claude Code, Codex, and Antigravity plugins install the promoted skills as managed, read-only bundles. **[skills.sh](https://skills.sh/mattpocock/skills)** copies editable skill files into your project, so you can hack on them and make them your own. Pick one route: installing both leaves you with every skill twice.
 
 ### 1. Get the skills
 
@@ -56,6 +56,20 @@ codex plugin add mskills@tz-tp
 ```
 
 The plugin contains the same promoted skill set as the Claude Code plugin. Start a new Codex thread after installing it, then invoke `mskills:setup-matt-pocock-skills` once per repository.
+
+</details>
+
+<details>
+<summary><strong>Antigravity</strong></summary>
+
+From a checkout of this repository:
+
+```bash
+mkdir -p ~/.gemini/config/plugins
+ln -s /path/to/tz-tp/dist/antigravity-plugin ~/.gemini/config/plugins/mskills
+```
+
+The plugin contains the same promoted skill set as the Claude Code plugin. Start a new Antigravity thread after linking it.
 
 </details>
 

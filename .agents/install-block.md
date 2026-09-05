@@ -37,6 +37,21 @@ codex plugin add mskills@tz-tp
 
 The generated bundle contains the same promoted skill set as the Claude Code plugin. Start a new Codex thread after installing it.
 
+## Antigravity: the plugin
+
+From a checkout of this repository:
+
+<canonical-block name="antigravity">
+
+```bash
+mkdir -p ~/.gemini/config/plugins
+ln -s /path/to/tz-tp/dist/antigravity-plugin ~/.gemini/config/plugins/mskills
+```
+
+</canonical-block>
+
+The generated bundle contains the same promoted skill set as the Claude Code plugin. Start a new Antigravity thread after linking it.
+
 ## Other agents: skills.sh
 
 [skills.sh](https://skills.sh/mattpocock/skills) copies editable skill files into the project. Use the whole-set form on `README.md`:
@@ -73,4 +88,4 @@ The plugin is a managed, read-only bundle you subscribe to. skills.sh writes fil
 
 ## Not the install story
 
-`.claude-plugin/marketplace.json` makes the repo its own single-plugin Claude marketplace. The generated `dist/.agents/plugins/marketplace.json` is the corresponding Codex marketplace. The Claude fallback is retained for installing the repository directly and is **not** documented to users.
+`.claude-plugin/marketplace.json` makes the repo its own single-plugin Claude marketplace. The generated `dist/.agents/plugins/marketplace.json` is the corresponding Codex marketplace, and `dist/antigravity-plugin/` is the native Antigravity plugin bundle. The Claude fallback is retained for installing the repository directly and is **not** documented to users.

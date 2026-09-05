@@ -6,9 +6,9 @@ Skills are organized into bucket folders under `skills/`:
 - `in-progress/`: beta: public on purpose, feedback wanted, not shipped in the plugin
 - `deprecated/`: no longer used
 
-Every skill in `engineering/` or `productivity/` (the **promoted** buckets) must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array. `npm run build-codex-plugin` derives the Codex plugin's flat `dist/codex-plugin/skills/` payload from that exact list. Skills in `misc/`, `in-progress/`, and `deprecated/` must not appear in either plugin.
+Every skill in `engineering/` or `productivity/` (the **promoted** buckets) must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array. `npm run build-agent-plugins` derives the Codex and Antigravity plugins' flat `dist/*-plugin/skills/` payloads from that exact list. Skills in `misc/`, `in-progress/`, and `deprecated/` must not appear in either generated plugin.
 
-Install commands are copied verbatim from [.agents/install-block.md](./.agents/install-block.md). `.claude-plugin/marketplace.json` and generated `dist/.agents/plugins/marketplace.json` make the repo its own single-plugin marketplace for Claude Code and Codex respectively. Run `claude plugin validate . --strict`, `npm run build-codex-plugin`, `npm run check-codex-plugin`, and the Codex plugin validator after touching either manifest.
+Install commands are copied verbatim from [.agents/install-block.md](./.agents/install-block.md). `.claude-plugin/marketplace.json` and generated `dist/.agents/plugins/marketplace.json` make the repo its own single-plugin marketplace for Claude Code and Codex respectively; Antigravity discovers the generated `dist/antigravity-plugin/` directly. Run `claude plugin validate . --strict`, `npm run build-agent-plugins`, `npm run check-agent-plugins`, the Codex plugin validator, and `agy plugin validate dist/antigravity-plugin` after touching either manifest.
 
 Each skill entry in the top-level `README.md` must link the skill name to its `SKILL.md`.
 
