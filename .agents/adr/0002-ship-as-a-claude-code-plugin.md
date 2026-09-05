@@ -1,4 +1,8 @@
-# Ship the skill set as a native Claude Code plugin; defer a native Codex plugin
+# Historical: Ship the skill set as a native Claude Code plugin; defer a native Codex plugin
+
+**Status: superseded.** The original Claude-only decision below is retained for its
+constraint analysis. The current distribution derives committed, curated Codex and
+Antigravity bundles from the promoted-skill list in `.claude-plugin/plugin.json`.
 
 These skills have always been installable via [skills.sh](https://skills.sh/mattpocock/skills) (`npx skills add mattpocock/skills`), which copies editable skill files into a user's project across Claude Code, Codex, and other Agent-Skills-standard harnesses. A recurring request is a **plug-and-play** distribution: subscribe to the set as a read-only, always-current bundle you don't edit, rather than a fork you own. That is exactly what native plugin systems provide.
 
@@ -40,8 +44,10 @@ Verified 2026-08-05, on Claude Code 2.1.222, against the live listing:
 - The listing's `source` is `{"source": "url", "url": "https://github.com/mattpocock/skills.git", "sha": …}`: the **sha is pinned**, so a release reaches installed users when that pin moves, not the moment we tag. At the time of writing the pin sits two commits behind `main`, which is why it lists 22 skills rather than the 24 in `plugin.json`.
 - The in-session `/plugin install mattpocock-skills` was **not** exercised: `/plugin` is unavailable in headless (`claude -p`) sessions. It runs the same resolver as the CLI, and the documented example form is `/plugin install <name>@claude-plugins-official`.
 
-## Update, 2026-09-04
+## Update, 2026-09-04: generated Codex and Antigravity bundles
 
 Codex plugins now provide a local marketplace flow, but the single-path constraint remains. The repository now derives `dist/codex-plugin/skills/` from the explicit promoted-skill list in `.claude-plugin/plugin.json`. The generated bundle has a normal `skills/` tree, so the Codex manifest can select it without exposing draft, deprecated, or miscellaneous skills. `dist/.agents/plugins/marketplace.json` points at that generated bundle.
 
-The generated payload is committed because Codex caches an installed plugin and drops symlinks. `npm run build-codex-plugin` is the only writer; `npm run check-codex-plugin` proves it exactly matches the Claude plugin's promoted list. This keeps authored skill content in one place while making the two plugin formats equivalent.
+The generated payload is committed because Codex caches an installed plugin and drops symlinks. `npm run build-agent-plugins` is the single writer, and `npm run check-agent-plugins` proves both generated bundles exactly match the Claude plugin's promoted list. This keeps authored skill content in one place while making the plugin formats equivalent.
+
+Antigravity discovers a native plugin folder with a root `plugin.json`, so the same build also emits `dist/antigravity-plugin/` with the curated `skills/` payload. A global install links that directory as `~/.gemini/config/plugins/mskills`, avoiding AGY's imported-plugin cache and keeping the checkout as the live source.
