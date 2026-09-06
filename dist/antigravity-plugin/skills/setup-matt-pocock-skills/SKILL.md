@@ -20,7 +20,7 @@ This is a prompt-driven skill, not a deterministic script. Explore, present what
 Look at the current repo to understand its starting state. Read whatever exists; don't assume:
 
 - `git remote -v` and `.git/config`: is this a GitHub repo? Which one?
-- `AGENTS.md` and `CLAUDE.md` at the repo root: does either exist? Is there already an `## Agent skills` section in either?
+- `AGENTS.md` at the repo root, and `CLAUDE.md` at both `./CLAUDE.md` and `./.claude/CLAUDE.md`: record every existing instruction and whether `.claude/CLAUDE.md` is already the canonical `../AGENTS.md` symlink. The setup converges these files in step 4.
 - `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/`: does this skill's prior output already exist?
@@ -63,22 +63,32 @@ Offer **multi-context** (a root `CONTEXT-MAP.md` pointing to per-context `CONTEX
 
 Show the user a draft of:
 
-- The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
+- The `## Agent skills` block to add to root `AGENTS.md`, plus the planned `.claude/CLAUDE.md -> ../AGENTS.md` symlink
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and `docs/agents/triage-labels.md` (the last only when `triage` is installed)
 
 Let them edit before writing.
 
 ### 4. Write
 
-**Pick the file to edit:**
+**Converge on one shared instruction file.** Every completed setup has exactly this layout:
 
-- If `CLAUDE.md` exists, edit it.
-- Else if `AGENTS.md` exists, edit it.
-- If neither exists, ask the user which one to create; don't pick for them.
+- `AGENTS.md` at the repo root is the canonical content file for every shared instruction.
+- `.claude/CLAUDE.md` is a relative symlink to `../AGENTS.md`. Claude Code reads the resolved file; Codex reads root `AGENTS.md` directly.
 
-Never create `AGENTS.md` when `CLAUDE.md` already exists (or vice versa); always edit the one that's already there.
+Do not use an `@../AGENTS.md` import for this bridge: it is Claude Code syntax, while Codex discovers and concatenates `AGENTS.md` files without expanding imports.
 
-If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
+Move every retained repo-wide instruction from an existing `./CLAUDE.md` and from a non-canonical `./.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted, remove the old root `CLAUDE.md` and replace the `.claude/CLAUDE.md` entry with the canonical symlink. Do not write through an existing `.claude/CLAUDE.md` symlink.
+
+Create `.claude/` if needed. After the merged draft is accepted, remove only the old `.claude/CLAUDE.md` file or symlink (never the `.claude/` directory), then make the bridge with:
+
+```bash
+rm -f .claude/CLAUDE.md
+ln -s ../AGENTS.md .claude/CLAUDE.md
+```
+
+If `.claude/CLAUDE.md` is a directory or cannot safely be replaced, stop and ask the user rather than altering it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
+
+Before finishing, verify that `AGENTS.md` exists, `./CLAUDE.md` does not, and `.claude/CLAUDE.md` is a symlink whose target is exactly `../AGENTS.md`.
 
 The block:
 
