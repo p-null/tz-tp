@@ -4,7 +4,7 @@
 
 Those files are the only thing that varies between repos. The skills themselves are identical everywhere; they read `docs/agents/issue-tracker.md` at run time and do what it says. That is why the set is not tied to GitHub, and why no skill file ever needs editing to point it somewhere else. Invoking it with "link the skills to a custom issue tracker" works with anything you can connect to programmatically, with zero changes to the skills.
 
-It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, any existing `AGENTS.md` or `CLAUDE.md`, and your existing `CONTEXT.md`, proposes what it found, and waits for you to confirm before writing anything. Every completed setup converges on root `AGENTS.md`, with root `CLAUDE.md` reduced to a one-line `@AGENTS.md` import.
+It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, any existing `AGENTS.md` or `CLAUDE.md`, and your existing `CONTEXT.md`, proposes what it found, and waits for you to confirm before writing anything. Every completed setup converges on root `AGENTS.md` alone; any existing `CLAUDE.md` is merged in and then deleted, never replaced.
 
 ## When to reach for it
 
@@ -21,10 +21,9 @@ It writes into the repo you run it in:
 | `issue-tracker.md` | `docs/agents/` |
 | `domain.md` | `docs/agents/` |
 | `triage-labels.md` | `docs/agents/`, only when the `triage` skill is installed |
-| An `## Agent skills` block | root `AGENTS.md`; any existing `CLAUDE.md` instructions are merged there during confirmation |
-| Claude Code bridge | root `CLAUDE.md`, reduced to a one-line `@AGENTS.md` import |
+| An `## Agent skills` block | root `AGENTS.md`; any existing `CLAUDE.md` instructions are merged there during confirmation, then that `CLAUDE.md` is deleted |
 
-All of it is committed markdown. There is no user-level or global mode: the config lives in the repo, so every repo gets its own copy.
+All of it is committed markdown. There is no user-level or global mode: the config lives in the repo, so every repo gets its own copy. `AGENTS.md` is the only agent-instruction file this skill commits; it never creates or commits a `CLAUDE.md`, root or `.claude/`.
 
 ## The three decisions
 
@@ -61,7 +60,7 @@ Asked directly after v1.1, Matt said yes. The skill's own closing message is sof
 
 **Will this work in both Claude Code and Codex?**
 
-Yes. The setup always converges on root `AGENTS.md`, which Codex loads directly, and root `CLAUDE.md` reduced to one line, `@AGENTS.md`, which Claude Code expands to the same content. Existing `CLAUDE.md` instructions are merged into `AGENTS.md` in the confirmation draft, then the old root `CLAUDE.md` is replaced with the import line. That one line is Claude Code-only syntax, which is exactly why it's safe here: Codex never opens `CLAUDE.md` at all, so it never sees the unexpanded `@`. A `.claude/CLAUDE.md` symlink was the first design for this bridge; it's gone because it silently fails to commit in any repo that gitignores `.claude/` wholesale.
+For Codex, yes without qualification: it reads root `AGENTS.md` directly, and that's the only file this skill commits. For Claude Code, only if you bridge it yourself. Claude Code has no native `AGENTS.md` fallback, and this skill deliberately doesn't write or commit anything CLAUDE.md-shaped into the shared repo to cover that gap: not a root `CLAUDE.md`, not a `.claude/CLAUDE.md` symlink, nothing. If you want Claude Code to pick up this content automatically, set up your own local, gitignored bridge (e.g. `.claude/CLAUDE.md` as a symlink to `../AGENTS.md`) — that's a personal choice, not something the skill imposes on everyone who clones the repo.
 
 **It didn't create my triage labels.**
 
@@ -85,7 +84,7 @@ One long-standing complaint says yes, in these words: *"having a skill to set up
 ## It's working if
 
 - `docs/agents/issue-tracker.md` and `docs/agents/domain.md` exist, plus `triage-labels.md` if `triage` is installed.
-- Root `AGENTS.md` contains the `## Agent skills` section, and root `CLAUDE.md` exists containing exactly `@AGENTS.md`.
+- Root `AGENTS.md` contains the `## Agent skills` section, and `git ls-files` shows no `CLAUDE.md` at any path.
 - The tracker it proposed matches the remote you really use, and the label strings match labels that really exist in your tracker.
 - Afterwards, `/to-tickets` publishes without asking you where issues live, and `/triage` applies labels rather than inventing them.
 - Nothing in the skill files themselves changed. If setup edited a `SKILL.md`, something went wrong.

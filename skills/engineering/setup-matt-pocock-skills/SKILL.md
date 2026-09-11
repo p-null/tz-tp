@@ -20,7 +20,7 @@ This is a prompt-driven skill, not a deterministic script. Explore, present what
 Look at the current repo to understand its starting state. Read whatever exists; don't assume:
 
 - `git remote -v` and `.git/config`: is this a GitHub repo? Which one?
-- `AGENTS.md` at the repo root, and `CLAUDE.md` at both `./CLAUDE.md` and `./.claude/CLAUDE.md`: record every existing instruction and whether root `CLAUDE.md` is already the canonical one-line `@AGENTS.md` import. The setup converges these files in step 4.
+- `AGENTS.md` at the repo root, and `CLAUDE.md` at both `./CLAUDE.md` and `./.claude/CLAUDE.md`: record every existing instruction in each. The setup converges all of it into root `AGENTS.md` in step 4.
 - `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/`: does this skill's prior output already exist?
@@ -63,30 +63,23 @@ Offer **multi-context** (a root `CONTEXT-MAP.md` pointing to per-context `CONTEX
 
 Show the user a draft of:
 
-- The `## Agent skills` block to add to root `AGENTS.md`, plus the planned root `CLAUDE.md` (the one-line `@AGENTS.md` import)
+- The `## Agent skills` block to add to root `AGENTS.md`
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and `docs/agents/triage-labels.md` (the last only when `triage` is installed)
 
 Let them edit before writing.
 
 ### 4. Write
 
-**Converge on one shared instruction file.** Every completed setup has exactly this layout:
+**Converge on one shared instruction file, and commit only that one.** Every completed setup has exactly this layout:
 
-- `AGENTS.md` at the repo root is the canonical content file for every shared instruction.
-- Root `CLAUDE.md` contains exactly one line, `@AGENTS.md`. Claude Code expands the import and reads the full content; Codex reads root `AGENTS.md` directly and never opens `CLAUDE.md`.
+- `AGENTS.md` at the repo root is the canonical content file for every shared instruction, and the only agent-instruction file this skill writes or commits.
+- No `CLAUDE.md` is created or committed anywhere, root or `.claude/`. Codex (and any other AGENTS.md-native tool) reads root `AGENTS.md` directly. Claude Code has no native AGENTS.md fallback, so without a bridge it won't auto-load this content; that's accepted, not solved here. Bridging it is a personal, local choice for whoever wants it (e.g. their own gitignored `.claude/CLAUDE.md` symlink to `../AGENTS.md`), never something this skill writes into the shared repo.
 
-Do not use a `.claude/CLAUDE.md` symlink for this bridge. It looks tidier but fails in two ways worth avoiding: it silently never gets committed in any repo that gitignores `.claude/` wholesale (a common pattern — check `git check-ignore -v .claude/CLAUDE.md` before assuming otherwise), and it doesn't survive on filesystems or archives without symlink support. A one-line `@AGENTS.md` import in a plain tracked root file has neither failure mode.
+Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted, delete the old `CLAUDE.md` (`git rm` it if tracked) rather than replacing it with anything.
 
-Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted, replace root `CLAUDE.md` with the one-line import:
+If `.claude/CLAUDE.md` is a directory, or an existing `CLAUDE.md` cannot safely be removed, stop and ask the user rather than altering it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
 
-```bash
-printf '@AGENTS.md\n' > CLAUDE.md
-rm -f .claude/CLAUDE.md
-```
-
-Remove `.claude/CLAUDE.md` only if it is a leftover file or symlink from an older setup (never the `.claude/` directory itself). If it is a directory, or root `CLAUDE.md` cannot safely be replaced, stop and ask the user rather than altering it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
-
-Before finishing, verify that `AGENTS.md` exists with the full merged content, root `CLAUDE.md` exists containing exactly `@AGENTS.md`, and `.claude/CLAUDE.md` does not exist.
+Before finishing, verify that `AGENTS.md` exists with the full merged content and that `git ls-files` shows no `CLAUDE.md` at any path. A local, gitignored `.claude/CLAUDE.md` someone set up for themselves is theirs to keep; it just isn't this skill's concern.
 
 The block:
 
