@@ -61,7 +61,7 @@ Asked directly after v1.1, Matt said yes. The skill's own closing message is sof
 
 **Will this work in both Claude Code and Codex?**
 
-Yes, out of the box for both. Codex reads root `AGENTS.md` directly. Claude Code has no native `AGENTS.md` fallback, so the skill also commits `.claude/CLAUDE.md` containing exactly `@../AGENTS.md`, which Claude Code expands to the same content. That bridge is always `.claude/CLAUDE.md`, never a root `CLAUDE.md` — Codex never opens either file, so the choice is purely about where Claude Code looks. If your `.gitignore` excludes `.claude/` wholesale, the skill patches it (a `.claude/*` exclude plus a `!.claude/CLAUDE.md` negation) so the bridge doesn't silently fail to commit.
+Yes, out of the box for both. Codex reads root `AGENTS.md` directly. Claude Code reads `AGENTS.md` only through its built-in `agents-md` plugin (2.1.277+), which is feature-flagged off wherever telemetry is disabled and on Bedrock, Vertex and Foundry, so the skill also commits `.claude/CLAUDE.md` containing exactly `@../AGENTS.md`, which Claude Code expands to the same content. That bridge is always `.claude/CLAUDE.md`, never a root `CLAUDE.md`: Codex never opens either file, so the choice is purely about where Claude Code looks. If your `.gitignore` excludes `.claude/` wholesale, the skill patches it (a `.claude/*` exclude plus a `!.claude/CLAUDE.md` negation) so the bridge doesn't silently fail to commit.
 
 **It didn't create my triage labels.**
 

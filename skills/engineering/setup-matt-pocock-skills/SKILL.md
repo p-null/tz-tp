@@ -74,7 +74,7 @@ Let them edit before writing.
 **Converge on one canonical content file, plus a committed bridge.** Every completed setup has exactly this layout:
 
 - `AGENTS.md` at the repo root is the canonical content file for every shared instruction.
-- `.claude/CLAUDE.md` is a committed one-line bridge, `@../AGENTS.md`. Codex (and any other AGENTS.md-native tool) reads root `AGENTS.md` directly and never opens this file; Claude Code has no native AGENTS.md fallback, so this bridge is what makes it load the same content. **Never a root `CLAUDE.md`** — the bridge always lives at `.claude/CLAUDE.md`, never the repo root, and this skill writes and commits it itself rather than leaving it as a personal, BYO choice.
+- `.claude/CLAUDE.md` is a committed one-line bridge, `@../AGENTS.md`. Codex (and any other AGENTS.md-native tool) reads root `AGENTS.md` directly and never opens this file. Claude Code reads `AGENTS.md` only through its built-in `agents-md` plugin (2.1.277+), which is feature-flagged off wherever telemetry is disabled and on Bedrock, Vertex and Foundry, so this bridge is what makes Claude Code load the same content everywhere; keep writing it while that plugin stays flag-gated. **Never a root `CLAUDE.md`**: the bridge always lives at `.claude/CLAUDE.md`, never the repo root, and this skill writes and commits it itself rather than leaving it as a personal, BYO choice.
 
 Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted:
 
