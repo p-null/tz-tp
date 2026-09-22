@@ -1,5 +1,4 @@
 node_modules
-.claude/*
-!.claude/CLAUDE.md
+.claude
 /CLAUDE.md
 dist/codex-plugin/.generated-from
