@@ -21,6 +21,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 
 - `git remote -v` and `.git/config`: is this a GitHub repo? Which one?
 - `AGENTS.md` at the repo root, and `CLAUDE.md` at both `./CLAUDE.md` and `./.claude/CLAUDE.md`: record every existing instruction in each. The setup converges all of it into root `AGENTS.md` in step 4.
+- Whether `.claude/CLAUDE.md` would be excluded from commits: run `git check-ignore -v .claude/CLAUDE.md`. A repo that gitignores `.claude/` wholesale (a common pattern) will swallow the bridge silently unless step 4's gitignore fix runs first.
 - `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/`: does this skill's prior output already exist?
@@ -63,23 +64,27 @@ Offer **multi-context** (a root `CONTEXT-MAP.md` pointing to per-context `CONTEX
 
 Show the user a draft of:
 
-- The `## Agent skills` block to add to root `AGENTS.md`
+- The `## Agent skills` block to add to root `AGENTS.md`, plus the `.claude/CLAUDE.md` bridge (and any `.gitignore` fix it needs)
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and `docs/agents/triage-labels.md` (the last only when `triage` is installed)
 
 Let them edit before writing.
 
 ### 4. Write
 
-**Converge on one shared instruction file, and commit only that one.** Every completed setup has exactly this layout:
+**Converge on one canonical content file, plus a committed bridge.** Every completed setup has exactly this layout:
 
-- `AGENTS.md` at the repo root is the canonical content file for every shared instruction, and the only agent-instruction file this skill writes or commits.
-- No `CLAUDE.md` is created or committed anywhere, root or `.claude/`. Codex (and any other AGENTS.md-native tool) reads root `AGENTS.md` directly. Claude Code has no native AGENTS.md fallback as of this writing, so without a bridge it won't auto-load this content; that's accepted, not solved here. Bridging it is a personal, local choice for whoever wants it, never something this skill writes into the shared repo. If someone sets one up, point them at `.claude/AGENTS.md` (not `.claude/CLAUDE.md`) so the filename stays AGENTS-shaped even for a personal, gitignored copy; note plainly that it isn't auto-loaded by Claude Code either (verified against the current release, which reads `CLAUDE.md` only), so it's a manual reference file, not a working bridge, until Claude Code ships native AGENTS.md support.
+- `AGENTS.md` at the repo root is the canonical content file for every shared instruction.
+- `.claude/CLAUDE.md` is a committed one-line bridge, `@../AGENTS.md`. Codex (and any other AGENTS.md-native tool) reads root `AGENTS.md` directly and never opens this file; Claude Code has no native AGENTS.md fallback, so this bridge is what makes it load the same content. **Never a root `CLAUDE.md`** — the bridge always lives at `.claude/CLAUDE.md`, never the repo root, and this skill writes and commits it itself rather than leaving it as a personal, BYO choice.
 
-Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted, delete the old `CLAUDE.md` (`git rm` it if tracked) rather than replacing it with anything.
+Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted:
 
-If `.claude/CLAUDE.md` is a directory, or an existing `CLAUDE.md` cannot safely be removed, stop and ask the user rather than altering it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
+- `git rm` any root `CLAUDE.md` (its content now lives in `AGENTS.md`); never recreate one there.
+- Fix a gitignore collision before writing the bridge, not after. If `.gitignore` excludes `.claude` or `.claude/` wholesale (a common pattern, and the reason a `.claude/CLAUDE.md` bridge silently fails to commit), replace that line with `.claude/*` plus a `!.claude/CLAUDE.md` negation immediately below it — the negation only takes effect because the *contents* of `.claude/` are excluded via the `*` wildcard, not the directory itself. Excluding the directory itself (a bare `.claude` or `.claude/` line) makes git skip it entirely and the negation can't reach inside. This keeps everything else under `.claude/` (worktrees, local settings) ignored while the bridge is tracked.
+- Write `.claude/CLAUDE.md` containing exactly `@../AGENTS.md` and stage it. If it was previously a symlink or gitignored file, replace it with this plain tracked import — the same failure modes that ruled out a symlink bridge (doesn't survive filesystems/archives without symlink support) apply regardless of location.
 
-Before finishing, verify that `AGENTS.md` exists with the full merged content and that `git ls-files` shows no `CLAUDE.md` at any path. A local, gitignored `.claude/AGENTS.md` someone set up for themselves is theirs to keep; it just isn't this skill's concern.
+If `.claude/CLAUDE.md` already exists as something other than this bridge (a directory, or content beyond the import line worth preserving), stop and ask the user rather than overwriting it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
+
+Before finishing, verify: `AGENTS.md` exists with the full merged content; `.claude/CLAUDE.md` exists containing exactly `@../AGENTS.md`; `git ls-files` shows no `CLAUDE.md` at the repo root; and `git check-ignore -v .claude/CLAUDE.md` reports nothing (i.e. the bridge isn't excluded).
 
 The block:
 
