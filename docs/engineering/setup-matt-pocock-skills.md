@@ -84,7 +84,7 @@ One long-standing complaint says yes, in these words: *"having a skill to set up
 
 ## It's working if
 
-- `docs/agents/issue-tracker.md` and `docs/agents/domain.md` exist, plus `triage-labels.md` if `triage` is installed.
+- `docs/agents/issue-tracker.md` and `docs/agents/domain.md` exist and are tracked (`git ls-files docs/agents`), plus `triage-labels.md` if `triage` is installed.
 - Root `AGENTS.md` contains the `## Agent skills` section, `git ls-files` shows no root `CLAUDE.md`, and `.claude/CLAUDE.md` is tracked containing exactly `@../AGENTS.md`.
 - The tracker it proposed matches the remote you really use, and the label strings match labels that really exist in your tracker.
 - Afterwards, `/to-tickets` publishes without asking you where issues live, and `/triage` applies labels rather than inventing them.

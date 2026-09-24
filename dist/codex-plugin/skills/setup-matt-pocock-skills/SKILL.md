@@ -84,7 +84,7 @@ Move every retained repo-wide instruction from an existing root `CLAUDE.md` and 
 
 If `.claude/CLAUDE.md` already exists as something other than this bridge (a directory, or content beyond the import line worth preserving), stop and ask the user rather than overwriting it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
 
-Before finishing, verify: `AGENTS.md` exists with the full merged content; `.claude/CLAUDE.md` exists containing exactly `@../AGENTS.md`; `git ls-files` shows no `CLAUDE.md` at the repo root; and `git check-ignore -v .claude/CLAUDE.md` reports nothing (i.e. the bridge isn't excluded).
+Before finishing, verify: `AGENTS.md` exists with the full merged content; `git ls-files --error-unmatch` succeeds for `AGENTS.md` and every `docs/agents/*.md` its `## Agent skills` block names; `.claude/CLAUDE.md` exists containing exactly `@../AGENTS.md`; `git ls-files` shows no `CLAUDE.md` at the repo root; and `git check-ignore -v .claude/CLAUDE.md` reports nothing (i.e. the bridge isn't excluded).
 
 The block:
 
@@ -115,6 +115,8 @@ Then write the docs files using the seed templates in this skill folder as a sta
 - [domain.md](./domain.md): domain doc consumer rules + layout
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+
+Stage each `docs/agents/*.md` file together with `AGENTS.md`: the `## Agent skills` block points at them, so a commit that carries `AGENTS.md` without them ships dangling pointers to every fresh clone.
 
 ### 5. Done
 
