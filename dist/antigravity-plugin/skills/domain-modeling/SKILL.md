@@ -63,6 +63,8 @@ When a term is resolved, update `CONTEXT.md` right there. Don't batch these up: 
 
 `CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
 
+Before adding an entry, and whenever asked to curate, prune or tighten an existing `CONTEXT.md`, follow [CONTEXT-CURATION.md](./CONTEXT-CURATION.md): what earns an entry, where everything else goes, the entry shape, and the size tripwire.
+
 ### Offer ADRs sparingly
 
 Only offer to create an ADR when all three are true:
