@@ -6,7 +6,7 @@
 
 A term earns an entry only when all three hold:
 
-1. **Project vocabulary.** People on this project use the word, or the user just coined it. General programming concepts (timeout, retry, cache, queue) and library names do not qualify, however heavily the code uses them.
+1. **Project vocabulary.** People on this project use the word, or the user just coined it. General programming concepts (timeout, retry, cache, queue) and library or vendor names do not qualify, however heavily the code uses them. The exception is a third-party name that collides with a project term (an off-the-shelf `Gateway` proxy beside the project's own gateway product): it gets an entry in a separate section for names that are not ours, saying which word is which.
 2. **Misreadable.** A competent newcomer would guess its meaning wrong, or two people have used it for different things, or several words compete for one concept.
 3. **Stable.** The meaning would survive a rewrite of the implementation. A concept that exists only because of how the code happens to work is not a term.
 
@@ -16,7 +16,7 @@ A candidate that fails the tests goes to its real home, and the glossary at most
 | --- | --- |
 | how a thing works: a mechanism, a data shape, a flow | the code, a code comment, or a design doc |
 | a hard-to-reverse choice with a real trade-off | an ADR |
-| a rule or requirement ("must", "never") | the spec |
+| a rule that tells implementers what to build ("must", "never") | the spec |
 | a step-by-step procedure | a runbook or skill |
 | status, a date, a version, a ticket or PR number | the tracker or the changelog |
 | a plan or a TODO | the tracker |
@@ -25,7 +25,7 @@ A candidate that fails the tests goes to its real home, and the glossary at most
 ## Entry shape
 
 - **One concept, one entry.** A competing word is an `_Avoid_` word on the winner, never an entry of its own.
-- **A bold singular term**, then a definition of one or two sentences that says what the thing *is* (a kind, plus what sets it apart), never what it does or how it is built. A definition that needs a third sentence is two terms, or design-doc material.
+- **A bold singular term**, then a definition of one or two sentences that says what the thing *is* (a kind, plus what sets it apart), never what it does or how it is built. A definition that needs a third sentence is two terms, or design-doc material. A constraint that tells the term apart from its neighbours ("never a column on the content table", "decides how much, never whether") stays in the definition, because it says what the thing is.
 - **`_Avoid_`** lists the rejected synonyms and the words people wrongly use for it.
 - **Bold the other terms** a definition uses. Relationships between terms go in the Relationships section, one line each with cardinality, never packed into a definition.
 - The file describes the project **now**. No dates, no "formerly", no "updated in" notes: history lives in git.
