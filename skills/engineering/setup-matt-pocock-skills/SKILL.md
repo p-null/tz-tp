@@ -9,7 +9,7 @@ Scaffold the per-repo configuration that the engineering skills assume:
 
 - **Issue tracker**: where issues live (GitHub by default; local markdown is also supported out of the box)
 - **Triage labels**: the strings used for the five canonical triage roles
-- **Domain docs**: where `CONTEXT.md` and ADRs live, and the consumer rules for reading them
+- **Domain docs**: where `GLOSSARY.md` and ADRs live, and the consumer rules for reading them
 
 This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write.
 
@@ -22,7 +22,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - `git remote -v` and `.git/config`: is this a GitHub repo? Which one?
 - `AGENTS.md` at the repo root, and `CLAUDE.md` at both `./CLAUDE.md` and `./.claude/CLAUDE.md`: record every existing instruction in each. The setup converges all of it into root `AGENTS.md` in step 4.
 - Whether `.claude/CLAUDE.md` would be excluded from commits: run `git check-ignore -v .claude/CLAUDE.md`. A repo that gitignores `.claude/` wholesale (a common pattern) will swallow the bridge silently unless step 4's gitignore fix runs first.
-- `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
+- `GLOSSARY.md` and `GLOSSARY-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/`: does this skill's prior output already exist?
 - `.scratch/`: a sign that a local-markdown issue tracker convention is already in use
@@ -56,9 +56,9 @@ If it is installed, ask exactly one question:
 
 The defaults are the five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only if the user says no, usually because their tracker already uses other names (e.g. `bug:triage` for `needs-triage`), collect the overrides so `triage` applies existing labels instead of creating duplicates.
 
-**Section C: Domain docs.** Default to **single-context** (one `CONTEXT.md` + `docs/adr/` at the repo root). This fits almost every repo; write it without asking.
+**Section C: Domain docs.** Default to **single-context** (one `GLOSSARY.md` + `docs/adr/` at the repo root). This fits almost every repo; write it without asking.
 
-Offer **multi-context** (a root `CONTEXT-MAP.md` pointing to per-context `CONTEXT.md` files) only when exploration found monorepo signals. Then confirm which layout they want.
+Offer **multi-context** (a root `GLOSSARY-MAP.md` pointing to per-context `GLOSSARY.md` files) only when exploration found monorepo signals. Then confirm which layout they want.
 
 ### 3. Confirm and edit
 
@@ -79,8 +79,8 @@ Let them edit before writing.
 Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted:
 
 - `git rm` any root `CLAUDE.md` (its content now lives in `AGENTS.md`); never recreate one there.
-- Fix a gitignore collision before writing the bridge, not after. If `.gitignore` excludes `.claude` or `.claude/` wholesale (a common pattern, and the reason a `.claude/CLAUDE.md` bridge silently fails to commit), replace that line with `.claude/*` plus a `!.claude/CLAUDE.md` negation immediately below it — the negation only takes effect because the *contents* of `.claude/` are excluded via the `*` wildcard, not the directory itself. Excluding the directory itself (a bare `.claude` or `.claude/` line) makes git skip it entirely and the negation can't reach inside. This keeps everything else under `.claude/` (worktrees, local settings) ignored while the bridge is tracked.
-- Write `.claude/CLAUDE.md` containing exactly `@../AGENTS.md` and stage it. If it was previously a symlink or gitignored file, replace it with this plain tracked import — the same failure modes that ruled out a symlink bridge (doesn't survive filesystems/archives without symlink support) apply regardless of location.
+- Fix a gitignore collision before writing the bridge, not after. If `.gitignore` excludes `.claude` or `.claude/` wholesale (a common pattern, and the reason a `.claude/CLAUDE.md` bridge silently fails to commit), replace that line with `.claude/*` plus a `!.claude/CLAUDE.md` negation immediately below it: the negation only takes effect because the *contents* of `.claude/` are excluded via the `*` wildcard, not the directory itself. Excluding the directory itself (a bare `.claude` or `.claude/` line) makes git skip it entirely and the negation can't reach inside. This keeps everything else under `.claude/` (worktrees, local settings) ignored while the bridge is tracked.
+- Write `.claude/CLAUDE.md` containing exactly `@../AGENTS.md` and stage it. If it was previously a symlink or gitignored file, replace it with this plain tracked import, since the same failure modes that ruled out a symlink bridge (doesn't survive filesystems/archives without symlink support) apply regardless of location.
 
 If `.claude/CLAUDE.md` already exists as something other than this bridge (a directory, or content beyond the import line worth preserving), stop and ask the user rather than overwriting it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
 
