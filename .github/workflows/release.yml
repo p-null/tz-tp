@@ -9,6 +9,8 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
+    # Upstream's version PR and tags. A fork has no publish target and must not open them.
+    if: github.repository == 'mattpocock/skills'
     name: Version
     runs-on: ubuntu-latest
     permissions:

@@ -51,3 +51,15 @@ Codex plugins now provide a local marketplace flow, but the single-path constrai
 The generated payload is committed because Codex caches an installed plugin and drops symlinks. `npm run build-agent-plugins` is the single writer, and `npm run check-agent-plugins` proves both generated bundles exactly match the Claude plugin's promoted list. This keeps authored skill content in one place while making the plugin formats equivalent.
 
 Antigravity discovers a native plugin folder with a root `plugin.json`, so the same build also emits `dist/antigravity-plugin/` with the curated `skills/` payload. A global install links that directory as `~/.gemini/config/plugins/mskills`, avoiding AGY's imported-plugin cache and keeping the checkout as the live source.
+
+## Update, 2026-10-07
+
+The Codex constraint above no longer holds. Codex `main` accepts a `skills` string array and falls back to `.claude-plugin/` when there is no `.codex-plugin/` ([manifest.rs](https://github.com/openai/codex/blob/main/codex-rs/core-plugins/src/manifest.rs)). Codex still drops symlinks.
+
+On Codex 0.161.0, the `@mattpocock` marketplace install loads the promoted model-invoked skills and nothing from `misc/` or `in-progress/`. Copilot CLI reads the same manifests and reports "Installed 27 skills".
+
+## Update, 2026-10-08: managed installs first
+
+`@mattpocock` is now the lead route on Codex, Copilot and VS Code, at the cost of a one-time opt-in on Copilot. Claude Code stays on `claude-plugins-official`, as in the 2026-08-05 update, because it auto-updates by default and needs no `marketplace add`.
+
+The version invariant above now applies to every managed route. `npm run version` already keeps it by running `scripts/sync-plugin-version.mjs`. `marketplace.json` has no `version` field, so it can't drift.

@@ -8,7 +8,7 @@ Skills are organized into bucket folders under `skills/`:
 
 Every skill in `engineering/` or `productivity/` (the **promoted** buckets) must have a reference in the top-level `README.md` and an entry in `.claude-plugin/plugin.json`'s `skills` array. `npm run build-agent-plugins` derives the Codex and Antigravity plugins' flat `dist/*-plugin/skills/` payloads from that exact list. Skills in `misc/`, `in-progress/`, and `deprecated/` must not appear in either generated plugin.
 
-Install commands are copied verbatim from [.agents/install-block.md](./.agents/install-block.md). `.claude-plugin/marketplace.json` and generated `dist/.agents/plugins/marketplace.json` make the repo its own single-plugin marketplace for Claude Code and Codex respectively; Antigravity discovers the generated `dist/antigravity-plugin/` directly. Run `claude plugin validate . --strict`, `npm run build-agent-plugins`, `npm run check-agent-plugins`, the Codex plugin validator, and `agy plugin validate dist/antigravity-plugin` after touching either manifest.
+Install commands are copied verbatim from [.agents/install-block.md](./.agents/install-block.md). `.claude-plugin/marketplace.json` and generated `dist/.agents/plugins/marketplace.json` make the repo its own single-plugin marketplace for Claude Code and Codex respectively; Antigravity discovers the generated `dist/antigravity-plugin/` directly. Run `claude plugin validate . --strict`, `npm run build-agent-plugins`, `npm run check-agent-plugins`, the Codex plugin validator, and `agy plugin validate dist/antigravity-plugin` after touching either manifest. [ADR 0002](./.agents/adr/0002-ship-as-a-claude-code-plugin.md) records why.
 
 Each skill entry in the top-level `README.md` must link the skill name to its `SKILL.md`.
 
@@ -23,3 +23,9 @@ Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `
 To (re)link every skill outside `deprecated/` and `misc/` into the local harness skill directories (`~/.claude/skills`, `~/.agents/skills`), run `scripts/link-skills.sh`. Each entry is a symlink into this repo, so a `git pull` keeps installed skills current; re-run the script after adding, removing, or renaming a skill.
 
 No em-dashes anywhere in this repo's prose (`SKILL.md` files, docs, `README.md`, `CHANGELOG.md`, ADRs, changesets, code comments). Where a sentence reaches for one, rewrite it instead with a comma, colon, period, parentheses, or a conjunction, whichever the sentence actually wants; never do a blind character substitution.
+
+## Agent skills
+
+### Triage labels
+
+Canonical names, unchanged. See `docs/agents/triage-labels.md`. Issues are judged against [`SCOPE.md`](./SCOPE.md).
