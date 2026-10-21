@@ -2,23 +2,25 @@
 
 One install story, one wording. `README.md`, `.changeset/*`, and every page under `docs/` must say **this** and nothing else. Change it here first, then propagate.
 
-`mattpocock-skills` is listed in **Claude Code's official marketplace** (configured name `claude-plugins-official`, source repo `anthropics/claude-plugins-official`), which every Claude Code install has out of the box. There is no marketplace to add first. Official Anthropic marketplaces have auto-update enabled by default ([discover-plugins](https://code.claude.com/docs/en/discover-plugins)), so "updates arrive automatically" is a true claim, not a hope.
+`mskills` is this fork's plugin, served from the fork's own marketplace `tz-tp` (the repo `p-null/tz-tp`). The official marketplace (`claude-plugins-official`) lists the upstream `mattpocock-skills` plugin instead, which keeps some skills user-only, so no install line here points at it. A third-party marketplace does not auto-update by default ([discover-plugins](https://code.claude.com/docs/en/discover-plugins)), so the block says how to update.
 
 ## Claude Code: the plugin
 
 <canonical-block name="claude-code">
 
 ```bash
-claude plugins install mattpocock-skills
+claude plugin marketplace add p-null/tz-tp
+claude plugin install mskills@tz-tp
 ```
 
 Or, from inside a session:
 
 ```
-/plugin install mattpocock-skills
+/plugin marketplace add p-null/tz-tp
+/plugin install mskills@tz-tp
 ```
 
-It's in Claude Code's official marketplace, so there's nothing to add first, and updates arrive automatically.
+This fork is not in Claude Code's official marketplace, so the marketplace is added first, and it does not update itself by default. To update, run `claude plugin marketplace update tz-tp`, then `claude plugin update mskills@tz-tp`.
 
 </canonical-block>
 

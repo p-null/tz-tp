@@ -32,16 +32,18 @@ The Claude Code, Codex, and Antigravity plugins install the promoted skills as m
 <summary><strong>Claude Code</strong></summary>
 
 ```bash
-claude plugins install mattpocock-skills
+claude plugin marketplace add p-null/tz-tp
+claude plugin install mskills@tz-tp
 ```
 
 Or, from inside a session:
 
 ```
-/plugin install mattpocock-skills
+/plugin marketplace add p-null/tz-tp
+/plugin install mskills@tz-tp
 ```
 
-It's in Claude Code's official marketplace, so there's nothing to add first, and updates arrive automatically.
+This fork is not in Claude Code's official marketplace, so the marketplace is added first, and it does not update itself by default. To update, run `claude plugin marketplace update tz-tp`, then `claude plugin update mskills@tz-tp`.
 
 </details>
 
