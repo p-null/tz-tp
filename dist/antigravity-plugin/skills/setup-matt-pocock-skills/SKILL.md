@@ -118,6 +118,8 @@ Then write the docs files using the seed templates in this skill folder as a sta
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 
+For local markdown, change the `triage-labels.md` column header from "Label in our tracker" to "Status in our tracker" (and the closing sentence to match): there the triage state is a `Status:` line in each issue file, not a label.
+
 Stage each `docs/agents/*.md` file together with `AGENTS.md`: the `## Agent skills` block points at them, so a commit that carries `AGENTS.md` without them ships dangling pointers to every fresh clone.
 
 ### 5. Done
