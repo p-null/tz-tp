@@ -9,14 +9,14 @@ One install story, one wording. `README.md`, `.changeset/*`, and every page unde
 <canonical-block name="claude-code">
 
 ```bash
-claude plugin marketplace add p-null/tz-tp
+claude plugin marketplace add https://github.com/p-null/tz-tp.git
 claude plugin install mskills@tz-tp
 ```
 
 Or, from inside a session:
 
 ```
-/plugin marketplace add p-null/tz-tp
+/plugin marketplace add https://github.com/p-null/tz-tp.git
 /plugin install mskills@tz-tp
 ```
 

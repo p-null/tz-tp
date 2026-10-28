@@ -32,14 +32,14 @@ The Claude Code, Codex, and Antigravity plugins install the promoted skills as m
 <summary><strong>Claude Code</strong></summary>
 
 ```bash
-claude plugin marketplace add p-null/tz-tp
+claude plugin marketplace add https://github.com/p-null/tz-tp.git
 claude plugin install mskills@tz-tp
 ```
 
 Or, from inside a session:
 
 ```
-/plugin marketplace add p-null/tz-tp
+/plugin marketplace add https://github.com/p-null/tz-tp.git
 /plugin install mskills@tz-tp
 ```
 
