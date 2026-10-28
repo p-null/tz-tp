@@ -2,4 +2,3 @@ node_modules
 .claude/*
 !.claude/CLAUDE.md
 /CLAUDE.md
-dist/codex-plugin/.generated-from
