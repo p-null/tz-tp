@@ -87,6 +87,7 @@ No. It diffs `<fixed-point>...HEAD`. The three-dot form measures from the merge-
 - Every Standards finding names either a rule in one of your repo's files or one of the twelve smells, with the hunk quoted; every Spec finding quotes a line of the spec.
 - The closing summary gives a worst issue per axis and declines to pick an overall winner.
 - With no spec available, the Spec block says so instead of listing requirements it inferred from the code.
+- A sub-agent that hit a limit or failed shows up as `Not reviewed:` with the message it returned, never as an axis with zero findings.
 
 ## Where it fits
 

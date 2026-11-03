@@ -75,9 +75,11 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
+First check that each report is a review. A sub-agent that hit a usage or rate limit, timed out or failed returns that message as its report (a limit notice, an API error, an empty reply), and aggregated as-is it reads as an axis with no findings. A review cites files, hunks or spec lines, or says plainly that it found nothing. Re-run an axis whose report is not a review once; if it fails again, keep its heading with `Not reviewed:` and the message it returned.
+
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). An axis that was not reviewed says so instead of a count. Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
 ## Why two axes
 
