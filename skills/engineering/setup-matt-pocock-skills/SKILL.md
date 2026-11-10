@@ -22,7 +22,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - `git remote -v` and `.git/config`: is this a GitHub repo? Which one?
 - `AGENTS.md` at the repo root, and `CLAUDE.md` at both `./CLAUDE.md` and `./.claude/CLAUDE.md`: record every existing instruction in each. The setup converges all of it into root `AGENTS.md` in step 4.
 - Whether the agent paths are already excluded from commits: run `git check-ignore -v AGENTS.md .claude/CLAUDE.md docs/agents/issue-tracker.md`. Step 4 excludes them through `.git/info/exclude`; none of them is ever committed.
-- `GLOSSARY.md` and `GLOSSARY-MAP.md` at the repo root
+- `GLOSSARY.md` and `GLOSSARY-MAP.md` at the repo root, and the legacy `CONTEXT.md` / `CONTEXT-MAP.md`. If a legacy file exists, offer to `git mv` it to its `GLOSSARY` name and rewrite those names in `docs/agents/domain.md`.
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/`: does this skill's prior output already exist?
 - `.scratch/`: a sign that a local-markdown issue tracker convention is already in use
@@ -47,6 +47,8 @@ Default posture: these skills were designed for GitHub. If a `git remote` points
 - **Other** (Jira, Linear, etc.): ask the user to describe the workflow in one paragraph; the skill will record it as freeform prose
 
 Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off**. Leave it off and don't raise it: a user who wants external PRs in the triage queue can flip the flag in the file later.
+
+A GitHub or GitLab tracker needs a reachable repo. When the user picks one and no `git remote` points at that host, get the repo URL from them and wire it up (`git init` if needed, `git remote add origin <url>`) before going further. Done when `gh repo view` / `glab repo view` prints the project from inside this directory; if it can't, stop and tell the user what's missing.
 
 **Section B: Triage label vocabulary.** Skip this section entirely if the `triage` skill isn't installed (exploration told you), since an uninstalled skill needs no labels.
 
@@ -120,7 +122,7 @@ For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch us
 
 For local markdown, change the `triage-labels.md` column header from "Label in our tracker" to "Status in our tracker" (and the closing sentence to match): there the triage state is a `Status:` line in each issue file, not a label.
 
-Stage each `docs/agents/*.md` file together with `AGENTS.md`: the `## Agent skills` block points at them, so a commit that carries `AGENTS.md` without them ships dangling pointers to every fresh clone.
+Never stage or commit `AGENTS.md` or `docs/agents/*.md`: they stay local and excluded (step 4). The `## Agent skills` block's pointers resolve in the clone that ran setup, and a fresh clone runs setup again.
 
 ### 5. Done
 

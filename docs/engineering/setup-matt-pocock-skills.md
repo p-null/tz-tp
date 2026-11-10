@@ -4,7 +4,7 @@
 
 Those files are the only thing that varies between repos. The skills themselves are identical everywhere. They read `docs/agents/issue-tracker.md` at run time and do what it says. That is why the set is not tied to GitHub, and why you never edit a skill file to point it at another tracker. Invoking it with "link the skills to a custom issue tracker" works with anything you can connect to programmatically, with no changes to the skills.
 
-It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, any existing `AGENTS.md` or `CLAUDE.md`, and your existing `GLOSSARY.md`, proposes what it found, and waits for you to confirm before writing anything. Every completed setup converges on root `AGENTS.md` as the canonical content, with a committed `.claude/CLAUDE.md` bridge (never a root `CLAUDE.md`) so Claude Code loads the same content.
+It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, any existing `AGENTS.md` or `CLAUDE.md`, and your existing `GLOSSARY.md`, proposes what it found, and waits for you to confirm before writing anything. Every completed setup converges on root `AGENTS.md` as the canonical content, with a local `.claude/CLAUDE.md` bridge (never a root `CLAUDE.md`) so Claude Code loads the same content. In this fork none of these files is ever committed: setup excludes them through the clone's `.git/info/exclude`.
 
 ## When to reach for it
 
@@ -24,7 +24,7 @@ It writes into the repo you run it in:
 | An `## Agent skills` block | root `AGENTS.md`; any existing `CLAUDE.md` instructions are merged there during confirmation, then any root `CLAUDE.md` is deleted |
 | A Claude Code bridge | `.claude/CLAUDE.md`, containing exactly `@../AGENTS.md` |
 
-All of it is committed markdown. There is no user-level or global mode: the config lives in the repo, so every repo gets its own copy. `AGENTS.md` is the canonical content file; `.claude/CLAUDE.md` is a committed bridge to it, never a root `CLAUDE.md`. If `.gitignore` excludes `.claude/` wholesale, the skill fixes that (a `.claude/*` exclude plus a `!.claude/CLAUDE.md` negation) rather than letting the bridge silently fail to commit.
+All of it is local markdown, excluded from git through the clone's `.git/info/exclude` and never staged or committed (this fork's rule: agent files stay local). There is no user-level or global mode: the config lives in the clone, so every clone gets its own copy. `AGENTS.md` is the canonical content file; `.claude/CLAUDE.md` is a bridge to it, never a root `CLAUDE.md`.
 
 ## The three decisions
 
@@ -61,7 +61,7 @@ The direct answer after v1.1 was yes. The skill's own closing message is softer.
 
 **Will this work in both Claude Code and Codex?**
 
-Yes, out of the box for both. Codex reads root `AGENTS.md` directly. Claude Code reads `AGENTS.md` only through its built-in `agents-md` plugin (2.1.277+), which is feature-flagged off wherever telemetry is disabled and on Bedrock, Vertex and Foundry, so the skill also commits `.claude/CLAUDE.md` containing exactly `@../AGENTS.md`, which Claude Code expands to the same content. That bridge is always `.claude/CLAUDE.md`, never a root `CLAUDE.md`: Codex never opens either file, so the choice is purely about where Claude Code looks. If your `.gitignore` excludes `.claude/` wholesale, the skill patches it (a `.claude/*` exclude plus a `!.claude/CLAUDE.md` negation) so the bridge doesn't silently fail to commit.
+Yes, out of the box for both. Codex reads root `AGENTS.md` directly. Claude Code reads `AGENTS.md` only through its built-in `agents-md` plugin (2.1.277+), which is feature-flagged off wherever telemetry is disabled and on Bedrock, Vertex and Foundry, so the skill also writes `.claude/CLAUDE.md` (kept local, never committed) containing exactly `@../AGENTS.md`, which Claude Code expands to the same content. That bridge is always `.claude/CLAUDE.md`, never a root `CLAUDE.md`: Codex never opens either file, so the choice is purely about where Claude Code looks.
 
 **It didn't create my triage labels.**
 
@@ -74,9 +74,9 @@ It doesn't. `docs/agents/triage-labels.md` is a *mapping*: it tells `/triage` wh
 
 No. It configures three things: tracker, labels, doc layout. There have been direct requests to make it the home for per-user preferences, and the standing answer is that skills stay opinionated: *"Config is death."* Preferences belong in your `AGENTS.md` as plain instructions, which every supported harness reads.
 
-**Can I keep the config in `~/.claude` instead of committing it to every repo?**
+**Can I keep the config in `~/.claude` instead of writing it to every clone?**
 
-Not today. A user who runs the skills across many repos has an open request for this, but no user-level mode exists. Every repo carries its own `docs/agents/`.
+Not today. A user who runs the skills across many repos has an open request for this, but no user-level mode exists. Every clone carries its own `docs/agents/`.
 
 **Isn't it strange to have a skill that configures the other skills?**
 
