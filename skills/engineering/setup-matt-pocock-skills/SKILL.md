@@ -80,13 +80,13 @@ Let them edit before writing.
 
 Move every retained repo-wide instruction from an existing root `CLAUDE.md` and from `.claude/CLAUDE.md` (read its target first if it is a symlink) into root `AGENTS.md`. When two files overlap or conflict, show the merged draft during confirmation; preserve the user's intent rather than silently choosing one. Once that draft is accepted:
 
-- Delete any untracked root `CLAUDE.md` (its content now lives in `AGENTS.md`); never recreate one there. A root `CLAUDE.md` that git already tracks is left in place and reported: removing a tracked file is a repo change for the user to approve.
-- Exclude, don't ignore: append `/AGENTS.md`, `/.claude/`, `/.agents/`, `/docs/agents/`, `/.scratch/` and `/.handover/` to the clone's `.git/info/exclude` (untracked, per clone), not to `.gitignore`, which is itself tracked and would publish the pattern list. Skip any gitignore edit: nothing here is committed.
+- Delete any untracked root `CLAUDE.md` (its content now lives in `AGENTS.md`); never recreate one there. Untrack every agent file git already tracks (`git ls-files AGENTS.md CLAUDE.md .claude .agents docs/agents .scratch .handover`), a root `CLAUDE.md` included: run `git rm --cached` on exactly those paths (the files stay on disk), then commit that removal alone on its own (user's go-ahead, 2026-11-12). Exclude rules never apply to tracked files, so the exclude step below does nothing until they are untracked.
+- Exclude, don't ignore: append `/AGENTS.md`, `/.claude/`, `/.agents/`, `/docs/agents/`, `/.scratch/` and `/.handover/` to the clone's `.git/info/exclude` (untracked, per clone), not to `.gitignore`, which is itself tracked and would publish the pattern list. Skip any gitignore edit. The only commit this skill ever makes is the removal commit above, never one that adds an agent file.
 - Write `.claude/CLAUDE.md` containing exactly `@../AGENTS.md` and do not stage it. If it was previously a symlink, replace it with this plain file, since the same failure modes that ruled out a symlink bridge (doesn't survive filesystems/archives without symlink support) apply regardless of location.
 
 If `.claude/CLAUDE.md` already exists as something other than this bridge (a directory, or content beyond the import line worth preserving), stop and ask the user rather than overwriting it. If an `## Agent skills` block already exists in `AGENTS.md` or an instruction file being migrated, update it in the merged root `AGENTS.md` rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
 
-Before finishing, verify: `AGENTS.md` exists with the full merged content; `git ls-files` lists none of `AGENTS.md`, `.claude/`, `docs/agents/` or `.scratch/`; `git check-ignore -v` reports each of them excluded by `.git/info/exclude`; `.claude/CLAUDE.md` exists containing exactly `@../AGENTS.md`; and `git status --short` shows none of these paths. Finish without a commit step.
+Before finishing, verify: `AGENTS.md` exists with the full merged content; `git ls-files` lists none of `AGENTS.md`, `.claude/`, `docs/agents/` or `.scratch/`; `git check-ignore -v` reports each of them excluded by `.git/info/exclude`; `.claude/CLAUDE.md` exists containing exactly `@../AGENTS.md`; and `git status --short` shows none of these paths. Finish without staging any agent file.
 
 The block:
 
